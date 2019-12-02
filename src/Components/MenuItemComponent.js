@@ -3,6 +3,8 @@ import firebase from '../firebase'
 
 import {AuthContext} from '../Auth'
 
+import MenuComponent from './MenuComponent'
+
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -19,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function HomeComponent(props) {
+export default function MenuItemComponent(props) {
 
    const classes = useStyles();
 
@@ -38,6 +40,9 @@ export default function HomeComponent(props) {
    //Collection des ratings des utilisateurs
    const dbRatings = firebase.firestore().collection('ratings')
    .doc(props.ramen.id).collection('userRatings')
+
+   //Ramen image
+   const [ramenImage, setRamenImage] = useState('http://via.placeholder.com/250x175')
 
    useEffect(() => {
       const fetchData = async () => {
@@ -136,6 +141,15 @@ export default function HomeComponent(props) {
    }
 
    function deleteRamen(){
+      dbRamen.delete().then(function() {
+         props.removeRamen(props.ramenindex)
+          setOpenDelete(false);
+      }).catch(function(error) {
+          console.error("Error removing document: ", error);
+      });
+   }
+
+   function openDeleteRamen(){
       setOpenDelete(true)
    }
 
@@ -169,18 +183,18 @@ export default function HomeComponent(props) {
       {//Si admin, il peut modifier le nom et le prix du ramen
          isAdmin() ?
          <div>
+            <img src={ramenImage} alt='ramen' /><br/>
             <input type="text" id="name" value={ramen.name}
             placeholder={props.ramen.name} onChange={handleRamenChange}/><br/>
-            <img src='../../ressources/rameinImages/ramen.jpg' alt='ramen' width='200px' /><br/>
             <input type="text" id="price" value={ramen.price}
             placeholder={props.ramen.price} onChange={handleRamenChange}/><br/>
             <Button onClick={updateRamen} variant="contained">Update</Button>
-            <Button onClick={deleteRamen} variant="contained" color="secondary">Delete</Button>
+            <Button onClick={openDeleteRamen} variant="contained" color="secondary">Delete</Button>
          </div>
          :
          <div>
             <h2>{props.ramen.name}</h2>
-            <img src='../ressources/ramenImages/ramen.jpg' alt='ramen' width='200px' /><br/>
+            <img src={ramenImage} alt='ramen' /><br/>
             <p> Price : {props.ramen.price}</p>
             <p>Rating : {rating}</p>
          </div>
@@ -222,14 +236,13 @@ export default function HomeComponent(props) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDelete} color="primary">
-            Ok
-          </Button>
+         <Button onClick={deleteRamen} color="secondary">Yes</Button>
+         <Button onClick={handleCloseDelete}>No</Button>
         </DialogActions>
       </Dialog>
       {//L'utilisateur peut seulement rate une fois
-       // et doit être connecté
-         !userAlreadyRated() ?
+       //doit être connecté
+         !userAlreadyRated()  ?
          <div>
             <input
                type="number"

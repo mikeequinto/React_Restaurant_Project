@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
    },
 }));
 
-export default function HomeComponent() {
+export default function MenuComponent() {
 
    const classes = useStyles();
 
@@ -80,16 +80,16 @@ export default function HomeComponent() {
       const db = firebase.firestore().collection('ramens')
       // Add a new document with a generated id.
       db.add({
-          ramen.data()
+          ...ramen
       })
       .then(function(docRef) {
           console.log("Document written with ID: ", docRef.id);
-          setRamens({
+          setRamens([
              ...ramens,
-             ramen,
-             id: docRef.id
-          })
-
+             { ramen,
+               id: docRef.id
+            }
+         ])
       })
       .catch(function(error) {
           console.error("Error adding document: ", error);
@@ -108,6 +108,14 @@ export default function HomeComponent() {
          setShowRamen(false)
       }else{
          setShowRamen(true)
+      }
+   }
+
+   function removeRamen(index){
+      var array = [...ramens]; // make a separate copy of the array
+      if (index !== -1) {
+       array.splice(index, 1);
+       setRamens(array);
       }
    }
 
@@ -141,10 +149,10 @@ export default function HomeComponent() {
             </Box>
          </div> : null
       }
-      <Grid container>
+      <Grid container spacing={3}>
          {ramens.map(ramen => (
             <Grid item xs={6} sm={4} key={ramen.id}>
-               <MenuItemComponent ramen={ramen}/>
+               <MenuItemComponent ramenindex={ramens.indexOf(ramen)} ramen={ramen} removeRamen={removeRamen}/>
             </Grid>
          ))}
       </Grid>
