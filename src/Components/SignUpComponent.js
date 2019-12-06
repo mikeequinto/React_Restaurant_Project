@@ -88,14 +88,16 @@ export default function SignUpComponent() {
      }
  }
 
- function writeUserData(userId) {
-    const db = app.firestore()
-    db.collection('users').doc(userId).set({
-      accountType : 'client'
-   })
-}
+   function writeUserData(userId) {
+      const db = app.firestore()
+      db.collection('users').doc(userId).set({
+         name: user.fullName,
+         email: user.email,
+         accountType : 'client'
+      })
+   }
 
-   const { currentUser } = useContext(AuthContext);
+   const {currentUser} = useContext(AuthContext)
    //On check s'il y a un utilisateur connecté
    if (currentUser.fullName !== '') {
       return <Redirect to="/" />;

@@ -184,6 +184,7 @@ export default function MenuItemComponent(props) {
          isAdmin() ?
          <div>
             <img src={ramenImage} alt='ramen' /><br/>
+            <p>Rating : {rating}</p>
             <input type="text" id="name" value={ramen.name}
             placeholder={props.ramen.name} onChange={handleRamenChange}/><br/>
             <input type="text" id="price" value={ramen.price}

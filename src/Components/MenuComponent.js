@@ -59,11 +59,10 @@ export default function MenuComponent() {
    const [showRamen, setShowRamen] = useState(false)
 
    const [ramen, setRamen] = useState({
-      name: '',
-      price: 10,
+      name: 'Ramen Name',
+      price: 14.99,
       image: '',
       rating: 4.5,
-      description: ''
    })
 
    function handleChange(evt) {
@@ -76,17 +75,17 @@ export default function MenuComponent() {
 
    function addRamen(event){
       event.preventDefault()
-
+      //Ajout du ramen dans firestore
       const db = firebase.firestore().collection('ramens')
       // Add a new document with a generated id.
       db.add({
           ...ramen
       })
       .then(function(docRef) {
-          console.log("Document written with ID: ", docRef.id);
+         //Ajout et affichage du ramen
           setRamens([
              ...ramens,
-             { ramen,
+             { ...ramen,
                id: docRef.id
             }
          ])
@@ -136,7 +135,7 @@ export default function MenuComponent() {
                value={ramen.name} className={classes.textField}
                margin="normal" onChange={handleChange}
                 />
-                <TextField required id="price" label="Price" type="number"
+                <TextField required id="price" label="Price (CHF)" type="number"
                 value={ramen.price} className={classes.textField} margin="normal"
                   onChange={handleChange}
                   InputLabelProps={{

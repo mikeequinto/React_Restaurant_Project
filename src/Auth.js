@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
 import app from "./firebase.js";
 
 //Context allows us to propagate data throughout the whole component tree
@@ -15,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
      app.auth().onAuthStateChanged(function(user) {
         if (user) {
+           console.log(user.displayName);
           // User is signed in.
           //Check user accountType
           checkAccountType(user.uid).then(accountType =>{

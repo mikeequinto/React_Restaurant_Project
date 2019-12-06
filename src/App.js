@@ -12,8 +12,9 @@ import HomeComponent from './Components/HomeComponent';
 import MenuComponent from './Components/MenuComponent';
 import LoginComponent from './Components/LoginComponent';
 import SignUpComponent from './Components/SignUpComponent';
+import MyAccountComponent from './Components/MyAccountComponent';
 
-import AdminHomeComponent from './Components/AdminHomeComponent'
+// import AdminHomeComponent from './Components/AdminHomeComponent'
 import AccountsComponent from './Components/AccountsComponent'
 
 export default function App() {
@@ -30,11 +31,13 @@ export default function App() {
                <Route exact path="/Contact" component={HomeComponent}></Route>
                <Route exact path="/Login" component={LoginComponent}></Route>
                <Route exact path="/Signup" component={SignUpComponent}></Route>
+               <Route exact path="/Account" component={MyAccountComponent}></Route>
                <Route exact path="/" component={HomeComponent}></Route>
                {
                   //Private routes
                }
-               <PrivateRoute exact path="/Admin" component={AdminHomeComponent} />
+               {//<PrivateRoute exact path="/Admin" component={AdminHomeComponent} />
+               }
                <PrivateRoute exact path="/Accounts" component={AccountsComponent} />
             </div>
          </Router>

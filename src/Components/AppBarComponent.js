@@ -1,5 +1,4 @@
-import React, {useContext} from 'react';
-//import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
@@ -7,20 +6,14 @@ import {
   Link
 } from "react-router-dom";
 
+import MenuListComposition from './AppBar/MenuListComposition'
+
 import { AuthContext } from '../Auth'
 
-import app from '../firebase'
 
 export default function AppBarComponent(props) {
 
-  const { currentUser } = useContext(AuthContext)
-
-  function isAdmin(){
-     if(currentUser.accountType === 'admin'){
-        return true
-     }
-     return false;
- }
+   const {currentUser} = useContext(AuthContext)
 
   return (
     <div>
@@ -31,21 +24,18 @@ export default function AppBarComponent(props) {
             <Button color="inherit" component={Link} to="/Menu">Menu</Button>
             <Button color="inherit" component={Link} to="/Contact">Contact</Button>
             { //Ajout des fonctionnalités admin si l'utilisateur a accès
-               isAdmin() ?
+               currentUser.accountType === 'admin' ?
                <div>
                   <Button color="inherit" component={Link} to="/Admin">Dashboard</Button>
                   <Button color="inherit" component={Link} to="/Accounts">Accounts</Button>
                </div> : null
             }
             { currentUser.id === '' ? <Button color="inherit" component={Link} to="/Login">Login</Button> : null }
-            { currentUser.id !== '' ? <Button color="inherit" onClick={signOut}>Log out</Button> : null}
+            { // remplacement du bouton log in par le nom de l'utilisateur
+               currentUser.id !== '' ? <MenuListComposition /> : null
+            }
         </Toolbar>
       </AppBar>
     </div>
   );
-
-  function signOut(){
-      app.auth().signOut()
-      console.log('logging out');
-  }
 }
