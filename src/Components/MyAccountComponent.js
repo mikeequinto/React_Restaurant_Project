@@ -24,6 +24,8 @@ export default function MyAccountComponent() {
 
    const classes = useStyles();
 
+   const dbUser = app.
+
    const {currentUser} = useContext(AuthContext)
 
    const [updatedUser, setUpdatedUser] = useState({
@@ -38,6 +40,18 @@ export default function MyAccountComponent() {
    }
 
    function updateUser(){
+      if(updatedUser.name !== ''){
+         updateField('name', updatedUser.name)
+      }
+      if(updatedUser.password !== '' && updatedUser.password === updatedUser.password2){
+         updateField('password', updatedUser.name)
+      }else{
+         alert('Please check your password')
+      }
+   }
+
+   function updateField(field, value){
+
       //Modification du user dans firebase authentication
       app.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -45,6 +59,16 @@ export default function MyAccountComponent() {
 
        }
       });
+
+      switch(field){
+         case 'name':
+            //Update name
+
+         case 'password':
+            //Update password
+         default:
+            return null
+      }
    }
 
    function deleteUser(){
@@ -63,10 +87,6 @@ export default function MyAccountComponent() {
        <form>
          <TextField id="name" label="Name"
          value={updatedUser.name} className={classes.textField} placeholder={currentUser.fullName}
-         margin="normal" onChange={handleChange} /> 
-         <br/>
-         <TextField id="email" label="Email"
-         value={updatedUser.email} className={classes.textField} placeholder={currentUser.email}
          margin="normal" onChange={handleChange} />
          <br/>
          <TextField id="password" label="New Password" type="password" placeholder="*******"
