@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
      app.auth().onAuthStateChanged(function(user) {
         if (user) {
-           console.log(user.displayName);
           // User is signed in.
           //Check user accountType
           checkAccountType(user.uid).then(accountType =>{
@@ -27,6 +26,10 @@ export const AuthProvider = ({ children }) => {
                email: user.email,
                accountType: accountType
             })
+            //If displayName unknown, get it from firestore
+            if(currentUser.fullName === ''){
+               getDisplayName(user.uid)
+            }
          })
         } else {
           // No user is signed in.
@@ -48,6 +51,15 @@ export const AuthProvider = ({ children }) => {
      })
      return accountType
  }
+
+ async function getDisplayName(userId){
+    const userRef = app.firestore().collection('users').doc(userId)
+    await userRef.get().then(doc =>{
+      setCurrentUser(prevState => {
+         return { ...prevState, fullName: doc.data().name }
+      });
+    })
+}
 
   return (
     <AuthContext.Provider value={{ currentUser }}>

@@ -64,6 +64,12 @@ export default function SignUpComponent() {
       password: ''
     })
 
+    const {currentUser} = useContext(AuthContext)
+   //On check s'il y a un utilisateur connecté
+   if (currentUser.fullName !== '') {
+      return <Redirect to="/" />;
+   }
+
   function handleChange(evt) {
     setUser(
       {
@@ -81,6 +87,7 @@ export default function SignUpComponent() {
         app.auth().currentUser.updateProfile({
            displayName: user.fullName
         })
+        //currentUser.fullName = (user.fullName) 
         //Save user in firestore
         writeUserData(app.auth().currentUser.uid)
      }catch(error){
@@ -95,12 +102,6 @@ export default function SignUpComponent() {
          email: user.email,
          accountType : 'client'
       })
-   }
-
-   const {currentUser} = useContext(AuthContext)
-   //On check s'il y a un utilisateur connecté
-   if (currentUser.fullName !== '') {
-      return <Redirect to="/" />;
    }
 
   return (
