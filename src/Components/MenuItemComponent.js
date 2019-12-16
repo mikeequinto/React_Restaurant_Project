@@ -12,6 +12,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Rating from '@material-ui/lab/Rating';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,11 +32,11 @@ export default function MenuItemComponent(props) {
 
    //Rating de ramen (moyenne de tous les ratings)
    const [rating, setRating] = useState(props.ramen.rating)
+   const [value, setValue] = React.useState(2);
    //Ratings de l'utilisateur
    const [userRating, setUserRating] = useState(5)
    //Ratings de tous les utilisateurs
    const [ratings, setRatings] = useState([])
-
    //Données du ramen
    const dbRamen = firebase.firestore().collection('ramens')
    .doc(props.ramen.id)
@@ -180,11 +183,10 @@ export default function MenuItemComponent(props) {
 
   return (
     <div>
+      <img src={ramenImage} alt='ramen' /><br/>
       {//Si admin, il peut modifier le nom et le prix du ramen
          isAdmin() ?
          <div>
-            <img src={ramenImage} alt='ramen' /><br/>
-            <p>Rating : {rating}</p>
             <input type="text" id="name" value={ramen.name}
             placeholder={props.ramen.name} onChange={handleRamenChange}/><br/>
             <input type="text" id="price" value={ramen.price}
@@ -195,11 +197,21 @@ export default function MenuItemComponent(props) {
          :
          <div>
             <h2>{props.ramen.name}</h2>
-            <img src={ramenImage} alt='ramen' /><br/>
-            <p> Price : {props.ramen.price}</p>
+            <p>Price : {props.ramen.price} CHF</p>
             <p>Rating : {rating}</p>
          </div>
       }
+      <Box component="fieldset" mb={1} borderColor="transparent">
+         {
+            !userAlreadyRated() ?
+              <Rating name="simple-controlled" value={parseInt(rating , 10 )}
+                onChange={(event, newValue) => {
+                  setRating(newValue);
+               }} /> :
+            <Rating name="simple-controlled" value={parseInt(rating , 10 )}
+               onChange={alert("Please log in to rate this product")}/>
+        }
+      </Box>
       {
          //Affichage du dialog lors d'un update
       }

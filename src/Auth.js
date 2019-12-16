@@ -45,24 +45,36 @@ export const AuthProvider = ({ children }) => {
 
   async function checkAccountType(userId){
      let accountType = ''
-     const userRef = app.firestore().collection('users').doc(userId)
-     await userRef.get().then(doc =>{
-        accountType = doc.data().accountType
-     })
-     return accountType
+     try{
+        const userRef = app.firestore().collection('users').doc(userId)
+       await userRef.get().then(doc =>{
+          accountType = doc.data().accountType
+       })
+       return accountType
+    }catch(error){
+      console.log(error);
+   }
+
  }
 
  async function getDisplayName(userId){
-    const userRef = app.firestore().collection('users').doc(userId)
-    await userRef.get().then(doc =>{
-      setCurrentUser(prevState => {
-         return { ...prevState, fullName: doc.data().name }
-      });
-    })
+    try{
+      const userRef = app.firestore().collection('users').doc(userId)
+      await userRef.get().then(doc =>{
+        if(doc.exists){
+           setCurrentUser(prevState => {
+              return { ...prevState, fullName: doc.data().name }
+           });
+        }
+      })
+   }catch(error){
+      console.log(error);
+   }
+
 }
 
   return (
-    <AuthContext.Provider value={{ currentUser }}>
+    <AuthContext.Provider value={{ currentUser: currentUser, setCurrentUser: setCurrentUser }}>
       {children}
     </AuthContext.Provider>
   );
