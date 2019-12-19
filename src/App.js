@@ -14,7 +14,7 @@ import LoginComponent from './Components/LoginComponent';
 import SignUpComponent from './Components/SignUpComponent';
 import MyAccountComponent from './Components/MyAccountComponent';
 
-// import AdminHomeComponent from './Components/AdminHomeComponent'
+import DashboardComponent from './Components/DashboardComponent'
 import AccountsComponent from './Components/AccountsComponent'
 
 export default function App() {
@@ -36,8 +36,7 @@ export default function App() {
                {
                   //Private routes
                }
-               {//<PrivateRoute exact path="/Admin" component={AdminHomeComponent} />
-               }
+               <PrivateRoute exact path="/Dashboard" component={DashboardComponent} />
                <PrivateRoute exact path="/Accounts" component={AccountsComponent} />
             </div>
          </Router>

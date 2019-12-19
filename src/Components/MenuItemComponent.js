@@ -30,21 +30,19 @@ export default function MenuItemComponent(props) {
 
    const {currentUser} = useContext(AuthContext)
 
-   //Rating de ramen (moyenne de tous les ratings)
+   //Rating du ramen (moyenne de tous les ratings)
    const [rating, setRating] = useState(props.ramen.rating)
-   const [value, setValue] = React.useState(2);
-   //Ratings de l'utilisateur
-   const [userRating, setUserRating] = useState(5)
-   //Ratings de tous les utilisateurs
+   //Rating de l'utilisateur
+   const [userRating, setUserRating] = useState()
+   //Ratings de tous les utilisateurs (pour calculer la nouvelle moyenne)
    const [ratings, setRatings] = useState([])
-   //Données du ramen
-   const dbRamen = firebase.firestore().collection('ramens')
-   .doc(props.ramen.id)
-   //Collection des ratings des utilisateurs
+   //Données du ramen depuis firestore
+   const dbRamen = firebase.firestore().collection('ramens').doc(props.ramen.id)
+   //Collection des ratings des utilisateurs depuis firestore
    const dbRatings = firebase.firestore().collection('ratings')
    .doc(props.ramen.id).collection('userRatings')
 
-   //Ramen image
+   //Ramen image (stock image)
    const [ramenImage, setRamenImage] = useState('http://via.placeholder.com/250x175')
 
    useEffect(() => {
@@ -59,18 +57,12 @@ export default function MenuItemComponent(props) {
       fetchData()
    }, [])
 
-   function handleRatingChange(event) {
-     setUserRating(event.target.value)
-   }
-
-   async function submitRating(event){
-      event.preventDefault()
+   function submitRating(){
       try{
          //Sauvegarde du rating de l'utilisateur
          updateUserRating()
          //Calcul de la nouvelle moyenne des ratings du ramen
          calculateRamenRating()
-
       }catch(error){
          alert(error)
       }
@@ -79,7 +71,8 @@ export default function MenuItemComponent(props) {
    function updateUserRating(){
       //Ajout du nouveau rating dans firestore
       dbRatings.doc(currentUser.id).set({
-         rating: userRating
+         rating: userRating,
+         date: new Date()
       })
       //Ajout du rating dans ratings
       setRatings(ratings =>[
@@ -198,18 +191,17 @@ export default function MenuItemComponent(props) {
          <div>
             <h2>{props.ramen.name}</h2>
             <p>Price : {props.ramen.price} CHF</p>
-            <p>Rating : {rating}</p>
          </div>
       }
       <Box component="fieldset" mb={1} borderColor="transparent">
          {
             !userAlreadyRated() ?
-              <Rating name="simple-controlled" value={parseInt(rating , 10 )}
-                onChange={(event, newValue) => {
-                  setRating(newValue);
-               }} /> :
-            <Rating name="simple-controlled" value={parseInt(rating , 10 )}
-               onChange={alert("Please log in to rate this product")}/>
+              <Rating name="simple-controlled" value={rating}
+                  onChangeActive={(event, newValue) => {
+                     setUserRating(newValue)
+                  }}
+                onClick={submitRating} /> :
+            <Rating name="read-only" value={rating} readOnly />
         }
       </Box>
       {
@@ -253,20 +245,6 @@ export default function MenuItemComponent(props) {
          <Button onClick={handleCloseDelete}>No</Button>
         </DialogActions>
       </Dialog>
-      {//L'utilisateur peut seulement rate une fois
-       //doit être connecté
-         !userAlreadyRated()  ?
-         <div>
-            <input
-               type="number"
-               id="userRating"
-               value={userRating}
-               onChange={handleRatingChange}
-            />
-            <button onClick={submitRating}>submit</button>
-         </div>
-         : null
-      }
     </div>
   );
 }

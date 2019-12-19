@@ -10,23 +10,37 @@ import MenuListComposition from './AppBar/MenuListComposition'
 
 import { AuthContext } from '../Auth'
 
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+    backgroundColor: '#FFFFFF',
+    color: '#D28114',
+},
+   menu: {
+      alignSelf: 'flex-end'
+   }
+}));
 
 export default function AppBarComponent(props) {
+
+   const classes = useStyles();
 
    const {currentUser} = useContext(AuthContext)
 
   return (
     <div>
 
-      <AppBar position="static">
-        <Toolbar>
+      <AppBar position="static" className={classes.root}>
+        <Toolbar className={classes.menu}>
             <Button color="inherit" component={Link} to="/">Home</Button>
             <Button color="inherit" component={Link} to="/Menu">Menu</Button>
             <Button color="inherit" component={Link} to="/Contact">Contact</Button>
             { //Ajout des fonctionnalités admin si l'utilisateur a accès
                currentUser.accountType === 'admin' ?
                <div>
-                  <Button color="inherit" component={Link} to="/Admin">Dashboard</Button>
+                  <Button color="inherit" component={Link} to="/Dashboard">Dashboard</Button>
                   <Button color="inherit" component={Link} to="/Accounts">Accounts</Button>
                </div> : null
             }

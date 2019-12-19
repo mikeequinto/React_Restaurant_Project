@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react';
 
 import firebase from '../../firebase'
 
+import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -11,7 +13,19 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { AuthContext } from '../../Auth'
 
+const useStyles = makeStyles(theme => ({
+   root: {
+     '& > *': {
+       margin: theme.spacing(1),
+     },
+   },
+   spacing: 8
+}));
+
+
 export default function AccountButton(props) {
+
+   const classes = useStyles();
 
    //Pour afficher ou non la fenêtre de confirmation
    const [openDelete, setOpenDelete] = useState(false)
@@ -68,16 +82,11 @@ export default function AccountButton(props) {
     <div>
       {props.action === 'changeType' ?
          <div>
-         { //Bouton désactivé si compte de l'utilisateur connecté
-            props.account.id === currentUser.id ?
-               <Button color="primary" disabled >Change</Button>
-               :
-               <Button color="primary" onClick={changeType}>Change</Button>
-         }
+            <Button color="primary" onClick={changeType}>Change</Button>
          </div>
          :
          <div>
-            <Button color="secondary" onClick={handleDelete}>Delete</Button>
+            <Button color="secondary" onClick={handleDelete} m={2}>Delete</Button>
          </div>
       }
         <Dialog
