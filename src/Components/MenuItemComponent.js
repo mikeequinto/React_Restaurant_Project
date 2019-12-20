@@ -40,7 +40,6 @@ export default function MenuItemComponent(props) {
    const dbRamen = firebase.firestore().collection('ramens').doc(props.ramen.id)
    //Collection des ratings des utilisateurs depuis firestore
    const dbRatings = firebase.firestore().collection('ratings')
-   .doc(props.ramen.id).collection('userRatings')
 
    //Ramen image (stock image)
    const [ramenImage, setRamenImage] = useState('http://via.placeholder.com/250x175')
@@ -48,7 +47,7 @@ export default function MenuItemComponent(props) {
    useEffect(() => {
       const fetchData = async () => {
          //Récupération de tous les ratings
-         const data = await dbRatings.get()
+         const data = await dbRatings.where("ramenId", "==", props.ramen.id).get()
          setRatings(data.docs.map(doc => ({
             ...doc.data(),
             id: doc.id
@@ -69,16 +68,18 @@ export default function MenuItemComponent(props) {
    }
 
    function updateUserRating(){
-      //Ajout du nouveau rating dans firestore
-      dbRatings.doc(currentUser.id).set({
-         rating: userRating,
-         date: new Date()
+      //Ajout du nouveau rating dans firestore avec un nouvel id
+      dbRatings.add({
+          userId: currentUser.id,
+          ramenId: props.ramen.id,
+          dateTime: new Date(),
+          rating: userRating
       })
       //Ajout du rating dans ratings
       setRatings(ratings =>[
          ...ratings,
          {
-            id: currentUser.id,
+            userId: currentUser.id,
             rating: userRating
          }
       ])
@@ -105,7 +106,7 @@ export default function MenuItemComponent(props) {
       })
    }
 
-   //fonctionnalités admin
+   //FONCTIONNALITEES ADMIN
 
    //Alert lorsqu'on update le ramen
    const [openUpdate, setOpenUpdate] = useState(false);
@@ -161,7 +162,7 @@ export default function MenuItemComponent(props) {
       //Check si ratings contient l'id de l'utilisateur
       if(currentUser.id !== ''){
          return ratings
-         .some(rating => currentUser.id === rating.id)
+         .some(rating => currentUser.id === rating.userId)
       }
       return true
    }
