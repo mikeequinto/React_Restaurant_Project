@@ -44,6 +44,8 @@ export default function DashboardComponent() {
         setRatings(data2.docs.map(doc => ({
            ...doc.data(),
            id: doc.id,
+           username: getUserName(doc.data().userId),
+           
         })))
      }
      fetchData()
@@ -51,15 +53,12 @@ export default function DashboardComponent() {
 
    function getUserName(id){
       //return db.collection('users').doc(id).get()
-
-      var username = "hi"
-
       var docRef = db.collection("users").doc(id);
 
       docRef.get().then(function(doc) {
           if (doc.exists) {
-              console.log(doc.data().name);
-              username = doc.data().name
+              console.log('hi ' + doc.data().name);
+              return doc.data().name
           } else {
               // doc.data() will be undefined in this case
               console.log("No such document!");
@@ -67,7 +66,6 @@ export default function DashboardComponent() {
       }).catch(function(error) {
           console.log("Error getting document:", error);
       });
-      return username
    }
 
    function getRamen(id){
@@ -109,10 +107,9 @@ export default function DashboardComponent() {
                <h2>Latest user ratings</h2>
                {ratings.map(rating => (
                   <div key={rating.id}>
-                     <p>{rating.rating}</p>
-                     <Rating name="read-only" value={rating.rating} readOnly />
-                     <p>{rating.userName}</p>
+                     <p>hey {rating.username}</p>
                      <p>{rating.ramenName}</p>
+                     <Rating name="read-only" value={rating.rating} readOnly />
                   </div>
                ))}
             </Paper>
