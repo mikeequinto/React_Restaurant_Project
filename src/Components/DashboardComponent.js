@@ -34,31 +34,44 @@ export default function DashboardComponent() {
    useEffect(() => {
      const fetchData = async () => {
         //Récupération des meilleures produits
-        const data = await db.collection("ramens").orderBy('rating', 'desc').limit(3).get()
-        setRamens(data.docs.map(doc => ({
-           ...doc.data(),
-           id: doc.id
-        })))
+        getBestRamen()
         //Récupération des derniers ratings
-        const data2 = await db.collection("ratings").orderBy('dateTime', 'desc').limit(3).get()
-        setRatings(data2.docs.map(doc => ({
-           ...doc.data(),
-           id: doc.id,
-           username: getUserName(doc.data().userId),
-           
-        })))
+        getRatings()
      }
      fetchData()
    }, [])
 
-   function getUserName(id){
-      //return db.collection('users').doc(id).get()
-      var docRef = db.collection("users").doc(id);
+   async function getBestRamen(){
+      const data = await db.collection("ramens").orderBy('rating', 'desc').limit(3).get()
+      setRamens(data.docs.map(doc => ({
+         ...doc.data(),
+         id: doc.id
+      })))
+   }
+
+   async function getRatings(){
+      const data2 = await db.collection("ratings").orderBy('dateTime', 'desc').limit(3).get()
+      setRatings(data2.docs.map(doc => ({
+         ...doc.data(),
+         id: doc.id,
+         username: '',
+         ramenName: ''
+      })))
+   }
+
+   function getUserName(rating){
+      //récupération de l'index du rating dans ratings
+      var index = ratings.findIndex(x => x.id === rating.id);
+      //Récupération du rating
+      var ratingObject = ratings[index]
+      //Récupération du nom de l'utilisateur dans firestore
+      var docRef = db.collection("users").doc(rating.userId);
 
       docRef.get().then(function(doc) {
           if (doc.exists) {
-              console.log('hi ' + doc.data().name);
-              return doc.data().name
+              let newArr = [...ratings]
+              newArr[index].username = doc.data().name
+              setRatings(newArr)
           } else {
               // doc.data() will be undefined in this case
               console.log("No such document!");
@@ -66,17 +79,24 @@ export default function DashboardComponent() {
       }).catch(function(error) {
           console.log("Error getting document:", error);
       });
+
    }
 
-   function getRamen(id){
-      //return db.collection('ramens').doc(id).get('name')
-
-      var docRef = db.collection("ramens").doc(id);
+   function getRamen(rating){
+      //récupération de l'index du rating dans ratings
+      var index = ratings.findIndex(x => x.id === rating.id);
+      //Récupération du rating
+      var ratingObject = ratings[index]
+      //Récupération du nom du ramen
+      var docRef = db.collection("ramens").doc(rating.ramenId);
+      console.log(rating.ramenId);
 
       docRef.get().then(function(doc) {
           if (doc.exists) {
-              console.log(doc.data().name);
-              return doc.data().name
+             let newArr = [...ratings]
+             newArr[index].ramenName = doc.data().name
+             setRatings(newArr)
+             console.log('yo');
           } else {
               // doc.data() will be undefined in this case
               console.log("No such document!");
@@ -87,6 +107,7 @@ export default function DashboardComponent() {
    }
 
   return (
+
      <div className={classes.root}>
      <h1>Welcome back {currentUser.fullName}!</h1>
       <Grid container>
@@ -107,8 +128,17 @@ export default function DashboardComponent() {
                <h2>Latest user ratings</h2>
                {ratings.map(rating => (
                   <div key={rating.id}>
-                     <p>hey {rating.username}</p>
-                     <p>{rating.ramenName}</p>
+                     {
+                        //Récupération du nom du ramen
+                        rating.ramenName === '' ?
+                        getRamen(rating) : null
+                     }
+                     {
+                        //Récupération du nom de l'utilisateur
+                        rating.username === '' ?
+                        getUserName(rating) : null
+                     }
+                     <p>{rating.ramenName} by {rating.username}</p>
                      <Rating name="read-only" value={rating.rating} readOnly />
                   </div>
                ))}
@@ -117,5 +147,6 @@ export default function DashboardComponent() {
         </Grid>
       </Grid>
     </div>
+
   );
 }

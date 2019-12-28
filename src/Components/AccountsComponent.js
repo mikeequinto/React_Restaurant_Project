@@ -38,7 +38,7 @@ export default function AccountsComponent() {
    useEffect(() => {
       const fetchData = async () => {
          const db = firebase.firestore()
-         const data = await db.collection("users").get()
+         const data = await db.collection("users").orderBy('name').get()
          setAccounts(data.docs.map(doc => ({
             ...doc.data(),
             id: doc.id
