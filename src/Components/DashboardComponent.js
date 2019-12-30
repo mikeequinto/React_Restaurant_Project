@@ -89,17 +89,17 @@ export default function DashboardComponent() {
       var ratingObject = ratings[index]
       //Récupération du nom du ramen
       var docRef = db.collection("ramens").doc(rating.ramenId);
-      console.log(rating.ramenId);
 
       docRef.get().then(function(doc) {
           if (doc.exists) {
              let newArr = [...ratings]
              newArr[index].ramenName = doc.data().name
              setRatings(newArr)
-             console.log('yo');
           } else {
               // doc.data() will be undefined in this case
-              console.log("No such document!");
+              let newArr = [...ratings]
+              newArr[index].ramenName = "Unknown ramen"
+              setRatings(newArr)
           }
       }).catch(function(error) {
           console.log("Error getting document:", error);

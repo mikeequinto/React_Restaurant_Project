@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect}from 'react'
-import firebase from '../firebase'
+import firebase, { storage } from '../firebase'
 
 import {AuthContext} from '../Auth'
 
@@ -116,34 +116,106 @@ export default function MenuItemComponent(props) {
    //State pour les changements du ramen
    const [ramen, setRamen] = useState({
       name: props.ramen.name,
-      price: props.ramen.price
+      price: props.ramen.price,
+      imageUrl: props.ramen.imageUrl || ''
    })
+   //State pour l'image du ramen en cas de modification
+   const [newImage, setNewImage] = useState({
+      file: null,
+      name: ''
+   })
+
+   const [imageName, setImageName] = useState('')
 
    function handleRamenChange(evt) {
       //Sauvegarde des changements dans les champs du ramen
-     setRamen(
-       {
-         ...ramen,
-         [evt.target.id]:evt.target.value,
-       })
+      if(evt.target.name === 'imageUrl'){
+         const image = evt.target.files[0]
+         if(image){
+            setNewImage({
+               file: image,
+               name: image.name
+            })
+         }
+      }else{
+         setRamen(
+           {
+             ...ramen,
+             [evt.target.name]:evt.target.value,
+           })
+           console.log(ramen.name);
+           console.log(evt.target.value);
+      }
+
+   }
+
+   async function uploadImage(){
+      //Generate random file name
+      const fileId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const uploadTask = storage.ref('images/' + fileId).put(newImage.file)
+      await uploadTask.on(
+         "state_changed",
+         () => {
+           // complete function ...
+           storage
+             .ref("images")
+             .child(fileId)
+             .getDownloadURL()
+             .then(url => {
+                updateImage(url)
+             });
+         }
+      )
+   }
+
+   function updateImage(url){
+      dbRamen.update({
+          imageUrl: url
+      })
+      .then( () => {
+         //Ajout et affichage du ramen
+          setRamen({
+             ...ramen,
+             imageUrl: url
+          })
+      })
+      .catch(function(error) {
+          console.error("Error updating image: ", error);
+      });
    }
 
    function updateRamen(){
       //Mise à jour dans firestore
       dbRamen.update({
          name: ramen.name,
-         price: ramen.price
+         price: ramen.price,
       })
+      //Mise à jour de l'image si modifié
+      if(newImage.file !== null){
+         //Ajout de la nouvelle image
+         uploadImage()
+         //Delete de l'ancienne image
+         deleteImage()
+      }
       setOpenUpdate(true);
    }
 
    function deleteRamen(){
       dbRamen.delete().then(function() {
          props.removeRamen(props.ramenindex)
-          setOpenDelete(false);
+         //Delete de l'image dans storage
+         deleteImage()
+         setOpenDelete(false);
       }).catch(function(error) {
           console.error("Error removing document: ", error);
       });
+   }
+
+   function deleteImage(){
+      var imageRef = storage.refFromURL(props.ramen.imageUrl)
+      imageRef.delete().then(function() {
+         console.log('Image deleted');
+      })
    }
 
    function openDeleteRamen(){
@@ -177,13 +249,31 @@ export default function MenuItemComponent(props) {
 
   return (
     <div>
-      <img src={ramenImage} alt='ramen' /><br/>
+      {//Si admin, il peut modifier la photo
+         isAdmin() ?
+         <div>
+            <input
+              accept="image/*" className={classes.input}
+              style={{ display: 'none' }} name="imageUrl" id={props.ramenindex}
+              type="file" value={ramen.file} onChange={handleRamenChange}
+           />
+           <label htmlFor={props.ramenindex}>
+              <img src={ramen.imageUrl || ramenImage}
+              alt='ramen' height="175" width="250"/><br/>
+           </label>
+         </div> :
+         <div>
+            <img src={ramen.imageUrl || ramenImage}
+            alt='ramen' height="175" width="250"/><br/>
+         </div>
+      }
+
       {//Si admin, il peut modifier le nom et le prix du ramen
          isAdmin() ?
          <div>
-            <input type="text" id="name" value={ramen.name}
+            <input type="text" name="name" value={ramen.name}
             placeholder={props.ramen.name} onChange={handleRamenChange}/><br/>
-            <input type="text" id="price" value={ramen.price}
+            <input type="text" name="price" value={ramen.price}
             placeholder={props.ramen.price} onChange={handleRamenChange}/><br/>
             <Button onClick={updateRamen} variant="contained">Update</Button>
             <Button onClick={openDeleteRamen} variant="contained" color="secondary">Delete</Button>
