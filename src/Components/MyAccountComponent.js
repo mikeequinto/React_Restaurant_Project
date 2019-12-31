@@ -29,8 +29,6 @@ export default function MyAccountComponent() {
 
    const classes = useStyles();
 
-   //Pour afficher ou non la fenêtre de confirmation
-   const [openDelete, setOpenDelete] = useState(false)
    //Utilisateur dans firestore
    const userRef = app.firestore().collection('users')
    //Utilisateur actuellement connecté
@@ -44,9 +42,20 @@ export default function MyAccountComponent() {
       password2: ''
    })
 
-   if(currentUser.id === ''){
-      return <Redirect to="/" />;
-   }
+   //Alert lorsqu'on update le ramen
+   const [openUpdate, setOpenUpdate] = useState(false);
+   //Pour afficher ou non la fenêtre de confirmation
+   const [openDelete, setOpenDelete] = useState(false)
+
+   useEffect(() => {
+      const fetchData = async () => {
+         if(currentUser.id === ''){
+            return <Redirect to="/" />;
+         }
+      }
+      fetchData()
+   }, [])
+
 
    function updateUser(){
 
@@ -73,7 +82,7 @@ export default function MyAccountComponent() {
       }
       //Affichage de l'alert si une modification a été effectué
       if(updated){
-         alert("Your account has been updated!")
+         setOpenUpdate(true)
       }
    }
 
@@ -150,6 +159,10 @@ export default function MyAccountComponent() {
       }
    }
 
+   function handleCloseUpdate(){
+      setOpenUpdate(false);
+   }
+
   return (
     <div>
       <h1>My Account</h1>
@@ -166,8 +179,33 @@ export default function MyAccountComponent() {
          value={updatedUser.password2} className={classes.textField} autoComplete="off"
          margin="normal" onChange={handleChange} />
          <br/>
+         <br/>
          <Button onClick={updateUser} variant="contained">Update</Button>
          <Button onClick={handleDelete} variant="contained" color="secondary">Delete</Button>
+         {
+            //Affichage du dialog lors d'un update
+         }
+         <Dialog
+           open={openUpdate}
+           onClose={handleCloseUpdate}
+           aria-labelledby="alert-dialog-title"
+           aria-describedby="alert-dialog-description"
+         >
+           <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
+           <DialogContent>
+             <DialogContentText id="alert-dialog-description">
+               Account has been updated!
+             </DialogContentText>
+           </DialogContent>
+           <DialogActions>
+             <Button onClick={handleCloseUpdate} color="primary">
+               Ok
+             </Button>
+           </DialogActions>
+         </Dialog>
+         {
+            //Affichage du dialog lors d'un delete
+         }
          <Dialog
            open={openDelete}
            onClose={handleDelete}

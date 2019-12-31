@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -67,13 +67,20 @@ export default function LoginComponent(props) {
   )
 
   const { currentUser } = useContext(AuthContext);
-  //On check s'il y a un utilisateur connecté
-  if (currentUser.accountType === 'client') {
-    return <Redirect to="/" />;
-  }
-  if(currentUser.accountType === 'admin'){
-     return <Redirect to="/Admin" />;
-  }
+
+
+  useEffect(() => {
+     const fetchData = async () => {
+        //On check s'il y a un utilisateur connecté
+        if (currentUser.accountType === 'client') {
+          return <Redirect to="/" />;
+        }
+        if(currentUser.accountType === 'admin'){
+           return <Redirect to="/Admin" />;
+        }
+     }
+     fetchData()
+  }, [])
 
   function handleChange(evt) {
     setUser(

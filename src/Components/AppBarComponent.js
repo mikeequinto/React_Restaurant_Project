@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import {
   Link
 } from "react-router-dom";
+import { HashLink } from 'react-router-hash-link';
 
 import MenuListComposition from './AppBar/MenuListComposition'
 
@@ -36,7 +37,7 @@ export default function AppBarComponent(props) {
         <Toolbar className={classes.menu}>
             <Button color="inherit" component={Link} to="/">Home</Button>
             <Button color="inherit" component={Link} to="/Menu">Menu</Button>
-            <Button color="inherit" component={Link} to="/Contact">Contact</Button>
+            <Button color="inherit" component={HashLink} to="/#VisitUs">Visit Us</Button>
             { //Ajout des fonctionnalités admin si l'utilisateur a accès
                currentUser.accountType === 'admin' ?
                <div>

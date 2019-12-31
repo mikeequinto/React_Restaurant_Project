@@ -28,7 +28,7 @@ export default function App() {
                   //Public routes
                }
                <Route exact path="/Menu" component={MenuComponent}></Route>
-               <Route exact path="/Contact" component={HomeComponent}></Route>
+               <Route exact path="/#VisitUs" component={HomeComponent}></Route>
                <Route exact path="/Login" component={LoginComponent}></Route>
                <Route exact path="/Signup" component={SignUpComponent}></Route>
                <Route exact path="/Account" component={MyAccountComponent}></Route>
