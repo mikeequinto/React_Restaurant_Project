@@ -3,8 +3,6 @@ import firebase, { storage } from '../firebase'
 
 import {AuthContext} from '../Auth'
 
-import MenuComponent from './MenuComponent'
-
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -13,7 +11,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Rating from '@material-ui/lab/Rating';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles(theme => ({
@@ -42,7 +39,7 @@ export default function MenuItemComponent(props) {
    const dbRatings = firebase.firestore().collection('ratings')
 
    //Ramen image (stock image)
-   const [ramenImage, setRamenImage] = useState('http://via.placeholder.com/250x175')
+   const [ramenImage] = useState('http://via.placeholder.com/250x175')
 
    useEffect(() => {
       const fetchData = async () => {
@@ -125,8 +122,6 @@ export default function MenuItemComponent(props) {
       name: ''
    })
 
-   const [imageName, setImageName] = useState('')
-
    function handleRamenChange(evt) {
       //Sauvegarde des changements dans les champs du ramen
       if(evt.target.name === 'imageUrl'){
@@ -143,8 +138,6 @@ export default function MenuItemComponent(props) {
              ...ramen,
              [evt.target.name]:evt.target.value,
            })
-           console.log(ramen.name);
-           console.log(evt.target.value);
       }
 
    }
@@ -273,7 +266,7 @@ export default function MenuItemComponent(props) {
          <div>
             <input type="text" name="name" value={ramen.name}
             placeholder={props.ramen.name} onChange={handleRamenChange}/><br/>
-            <input type="text" name="price" value={ramen.price}
+            <input type="number" name="price" value={ramen.price} min="0"
             placeholder={props.ramen.price} onChange={handleRamenChange}/><br/>
             <Button onClick={updateRamen} variant="contained">Update</Button>
             <Button onClick={openDeleteRamen} variant="contained" color="secondary">Delete</Button>

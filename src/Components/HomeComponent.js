@@ -1,10 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import firebase, {storage} from '../firebase'
 
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Rating from '@material-ui/lab/Rating';
 import { sizing } from '@material-ui/system';

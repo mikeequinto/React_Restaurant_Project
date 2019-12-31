@@ -62,8 +62,6 @@ export default function DashboardComponent() {
    function getUserName(rating){
       //récupération de l'index du rating dans ratings
       var index = ratings.findIndex(x => x.id === rating.id);
-      //Récupération du rating
-      var ratingObject = ratings[index]
       //Récupération du nom de l'utilisateur dans firestore
       var docRef = db.collection("users").doc(rating.userId);
 
@@ -85,8 +83,6 @@ export default function DashboardComponent() {
    function getRamen(rating){
       //récupération de l'index du rating dans ratings
       var index = ratings.findIndex(x => x.id === rating.id);
-      //Récupération du rating
-      var ratingObject = ratings[index]
       //Récupération du nom du ramen
       var docRef = db.collection("ramens").doc(rating.ramenId);
 

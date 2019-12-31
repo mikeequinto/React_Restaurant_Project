@@ -7,7 +7,6 @@ import MenuItemComponent from './MenuItemComponent'
 
 //Styles
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -74,9 +73,6 @@ export default function MenuComponent() {
       file: null,
       name: 'Choose image',
    })
-   //Ramen image upload
-   const [uploading, setUploading] = useState(false)
-   const [progress, setProgress] = useState(0)
    //Alert lorsqu'on ajoute un ramen
    const [openUpdate, setOpenUpdate] = useState(false)
    //Alert lorsque l'utilisateur oubli de choisir une image
@@ -141,18 +137,6 @@ export default function MenuComponent() {
       const uploadTask = storage.ref('images/' + fileId).put(image.file)
       await uploadTask.on(
          "state_changed",
-         snapshot => {
-            //Pour le progress bar upload
-            const progress = Math.round(
-               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            )
-            setProgress(progress)
-         }
-         ,
-         error => {
-           // Error function ...
-           console.log(error);
-         },
          () => {
            // complete function ...
            storage
@@ -235,11 +219,6 @@ export default function MenuComponent() {
                  </Button>
                </label>
                <span> </span>{image.name}
-               {
-                  uploading ?
-                  <p>Upload progress : {image.progress || 0}%</p> : null
-               }
-
             </form>
             <Box m={2}>
                <Button onClick={addRamen} variant="contained" color="primary">Submit ramen</Button>

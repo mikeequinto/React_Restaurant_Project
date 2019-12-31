@@ -1,6 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
-
-import {AuthContext} from '../Auth'
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -9,7 +7,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 
 import AccountButton from './MyAccount/AccountButton'
 
@@ -31,9 +28,6 @@ export default function AccountsComponent() {
    const classes = useStyles();
 
    const [accounts, setAccounts] = useState([])
-
-   //Firestore collection users
-   const dbUsers = firebase.firestore().collection('users')
 
    useEffect(() => {
       const fetchData = async () => {

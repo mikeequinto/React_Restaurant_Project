@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
 import app from "./firebase.js";
 
 //Context allows us to propagate data throughout the whole component tree

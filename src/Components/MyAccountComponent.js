@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import {AuthContext} from '../Auth'
 import app from '../firebase'
@@ -33,8 +33,6 @@ export default function MyAccountComponent() {
    const userRef = app.firestore().collection('users')
    //Utilisateur actuellement connecté
    const {currentUser, setCurrentUser} = useContext(AuthContext)
-   //Variable permettant de savoir si une modification a été effectué
-   const [accountUpdated, setAcccountUpdated] = useState(false)
    //Champs du form
    const [updatedUser, setUpdatedUser] = useState({
       name: '',
@@ -47,15 +45,9 @@ export default function MyAccountComponent() {
    //Pour afficher ou non la fenêtre de confirmation
    const [openDelete, setOpenDelete] = useState(false)
 
-   useEffect(() => {
-      const fetchData = async () => {
-         if(currentUser.id === ''){
-            return <Redirect to="/" />;
-         }
-      }
-      fetchData()
-   }, [])
-
+   if(currentUser.id === ''){
+      return <Redirect to="/" />;
+   }
 
    function updateUser(){
 
@@ -143,6 +135,7 @@ export default function MyAccountComponent() {
       if(user){
          user.delete().then(function() {
             alert("Your account has been deleted")
+            setOpenDelete(false)
          }).catch(function(error) {
            // An error happened.
            alert(error)
